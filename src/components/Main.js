@@ -1,6 +1,8 @@
 import { Component } from "react";
 import axios from "axios";
 import Search from './Search.js';
+import DisplayCard from './DisplayCard.js';
+import Alert from 'react-bootstrap/Alert';
 
 
 export default class Main extends Component {
@@ -8,19 +10,19 @@ export default class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            cityValue: '',
             location: '',
             error: false,
             map: ''
         }
     }
 
-    handleClick = async () => {
-        const cityurl = `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${this.state.cityValue}&format=json`;
+    getLocation = async (city) => {
+        const cityurl = `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${city}&format=json`;
 
         try {
             let response = await axios.get(cityurl);
-            this.setState( {location: response.data[0]} );
+            this.setState({location: response.data[0]}, this.getMapURL, {error: false});
+            console.log(response.data[0]);
         } catch (error) {
             console.log(error);
             this.setState( {error: true} );
@@ -28,16 +30,18 @@ export default class Main extends Component {
 
     }
 
-    handleChange = (e) => {
-        e.preventDefault();
-        this.setState( {cityValue: e.target.value} )
+    getMapURL = () => {
+        let url = `https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=
+        ${this.state.location.lat},${this.state.location.lon}&zoom=12`;
+        this.setState( {location: {...this.state.location, map: url}} );
     }
 
     render() {
         return (
             <div>
-                <Search handleClick={this.handleClick} handleChange={this.handleChange}/>
-                {this.state.location && <h1>{this.state.location.display_name}</h1>}
+                <Search getLocation={this.getLocation} />
+                {this.state.location.map && <DisplayCard location={this.state.location}/>}
+                {this.state.error && <Alert variant='danger'>An error has occured</Alert>}
             </div>
         )
     }
