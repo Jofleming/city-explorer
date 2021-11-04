@@ -3,6 +3,7 @@ import axios from "axios";
 import Search from './Search.js';
 import DisplayCard from './DisplayCard.js';
 import Alert from 'react-bootstrap/Alert';
+import Weather from './Weather.js';
 
 
 export default class Main extends Component {
@@ -42,6 +43,7 @@ export default class Main extends Component {
                 <Search getLocation={this.getLocation} />
                 {this.state.location.map && <DisplayCard location={this.state.location}/>}
                 {this.state.error && <Alert variant='danger'>An error has occured</Alert>}
+                {this.state.location.map && <Weather location={this.state.location} />} 
             </div>
         )
     }

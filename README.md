@@ -1,7 +1,7 @@
 # City-Explorer
 
 **Author**: Jordan Fleming
-**Version**: 1.0.0
+**Version**: 1.0.2
 
 ## Overview
 This application will build a site that lets users search by city to get a map of the city as well as info about things to do in the city.
@@ -16,7 +16,7 @@ Written in JavaScript using React, Axios libraries, and LocationIQ for the API.
 
 ## Change Log
 
-
+.0.1 Added API functionality and ability to populate city name, lon, lat, and city map.
 
 
 ## Credit and Collaborations
