@@ -1,29 +1,21 @@
 import { Component } from "react";
-import axios from 'axios';
+import { Card } from 'react-bootstrap';
 
 export default class Movies extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            moviesShowing: []
-        };
-    }
-
-    getMoviesShowing = async () => {
-        const city = location.props.display_name.split(',')[0];
-        const url = `${process.env.REACT_APP_SERVER_URL}/movie?city=${city}`;
-        try {
-            let response = await axios.get(url);
-            this.setState({moviesShowing: response.data});
-        } catch (e) {
-            this.setState
-        }
-
-    }
 
     render() {
         return (
-
+            <div>
+                <Card style={{ width: '18rem' }}>
+                    <Card.Img variant="top" src={this.props.moviesShowing.imageUrl} />
+                    <Card.Body>
+                        <Card.Title>{this.props.moviesShowing.title}</Card.Title>
+                        <Card.Text>
+                            Lat: {this.props.moviesShowing.overview}
+                        </Card.Text>
+                    </Card.Body>
+                </Card>
+            </div>
         )
     }
 }
