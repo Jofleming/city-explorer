@@ -2,7 +2,6 @@ import { Component } from "react";
 import axios from "axios";
 import Search from './Search.js';
 import DisplayCard from './DisplayCard.js';
-import Alert from 'react-bootstrap/Alert';
 import Weather from './Weather.js';
 import Error from './Error.js';
 import Movies from './Movie.js';
@@ -15,8 +14,54 @@ export default class Main extends Component {
         this.state = {
             location: '',
             error: false,
-            map: ''
+            map: '',
+            cityName: '',
+            weatherForecast: [],
+            moviesShowing: []
         }
+    }
+
+    getMoviesShowing = async (location) => {
+        const city = location.props.display_name.split(',')[0];
+        const url = `${process.env.REACT_APP_SERVER_URL}/movie?city=${city}`;
+        try {
+            let response = await axios.get(url);
+            this.setState({moviesShowing: response.data});
+        } catch (e) {
+            this.setState({error: true})
+        }
+
+    }
+
+    handleChange = (e) => {
+        e.preventDefault();
+        this.setState( {cityName: e.target.value} )
+    }
+
+    handleClick = async (event) => {
+        event.preventDefault();
+        this.setState({error: ''});
+        try {
+            await this.getLocation();
+            this.getMapURL();
+            this.getWeatherForecast();
+            this.getMoviesShowing();
+        } catch (e) {
+            this.setState({error: true})
+        }
+        this.props.getLocation(this.state.cityName)
+    }
+
+    getWeatherForecast = async () => {
+        const url = `${process.env.REACT_APP_SERVER_URL}/weather?lat=${this.props.location.lat}&lon=${this.props.location.lon}`;
+        try {
+            let response = await axios.get(url);
+            this.setState({weatherForecast: response.data});
+        } catch (e) {
+            this.setState({weatherForecast: []});
+            this.props.errorHandler()
+        }
+
     }
 
     getLocation = async (city) => {
@@ -42,11 +87,11 @@ export default class Main extends Component {
     render() {
         return (
             <div>
-                <Search getLocation={this.getLocation} />
+                <Search getLocation={this.getLocation} handleClick={this.handleClick} handleChange={this.handleChange} />
                 <Error error={this.state.error} />
                 {this.state.location.map && <DisplayCard location={this.state.location}/>}
-                {this.state.location.map && <Weather location={this.state.location} />} 
-                <Movies location={this.state.location} />
+                <Weather weatherForecast={this.state.weatherForecast} />
+                <Movies moviesShowing={this.state.moviesShowing} />
             </div>
         )
     }
